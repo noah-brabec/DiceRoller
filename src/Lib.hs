@@ -9,6 +9,7 @@ import Text.Parsec.Expr
 import Text.Parsec.Token
 import Text.Parsec.Language
 import Data.Monoid (mconcat) 
+import System.Random
 
 data DiceString where 
   Num :: Int -> DiceString
@@ -49,6 +50,7 @@ view = "<h1>Dice Roller</h1>"
 
 eval :: DiceString -> Maybe DiceString
 eval (Num n) = return Num
+eval (Die d) = return (eval (getRoll d))
 eval (Plus l r) = do { t1 <- eval l;
                        t2 <- eval r;
                        return (t1 + t2)}
@@ -61,3 +63,15 @@ eval (Times l r) = do { t1 <- eval l;
 eval (Div l r) = do { t1 <- eval l;
                       t2 <- eval r;
                       return (t1 `div` t2)}
+
+getRoll :: Dice -> Int
+getRoll D4 = roll 1 4
+getRoll D6 = roll 1 6
+getRoll D8 = roll 1 8
+getRoll D10 = roll 1 10
+getRoll D12 = roll 1 12
+getRoll D20 = roll 1 20
+getRoll D100 = roll 1 100
+
+roll :: Int -> Int -> Int
+roll lower upper = randomR(lower, upper) <$> newStdGen
