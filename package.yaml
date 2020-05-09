@@ -26,6 +26,7 @@ dependencies:
 - warp
 - http-types
 - text
+- parsec
 
 library:
   source-dirs: src
