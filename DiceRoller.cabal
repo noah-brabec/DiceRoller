@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: c329cfd9629d1a3100fc12d62442c44c3f110202cf7c5dbcb95bcbd25e7b7eac
+-- hash: 8fe1f7c2614f32ccc5a643a0ce84764513153bc907b3e421c84950bb88655043
 
 name:           DiceRoller
 version:        0.1.0.0
@@ -27,6 +27,7 @@ source-repository head
 
 library
   exposed-modules:
+      DiceParser
       Lib
   other-modules:
       Paths_DiceRoller
@@ -36,6 +37,7 @@ library
       base >=4.7 && <5
     , http-types
     , parsec
+    , random
     , scotty
     , text
     , wai
@@ -54,6 +56,7 @@ executable DiceRoller-exe
     , base >=4.7 && <5
     , http-types
     , parsec
+    , random
     , scotty
     , text
     , wai
@@ -73,6 +76,7 @@ test-suite DiceRoller-test
     , base >=4.7 && <5
     , http-types
     , parsec
+    , random
     , scotty
     , text
     , wai

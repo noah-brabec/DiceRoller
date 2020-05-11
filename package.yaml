@@ -27,6 +27,7 @@ dependencies:
 - http-types
 - text
 - parsec
+- random
 
 library:
   source-dirs: src
