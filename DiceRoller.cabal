@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 8fe1f7c2614f32ccc5a643a0ce84764513153bc907b3e421c84950bb88655043
+-- hash: f35ade8d4ea1b28b20d1c7be0725dca5bd9b295432f1be4a1df632a77466a18e
 
 name:           DiceRoller
 version:        0.1.0.0
@@ -27,6 +27,7 @@ source-repository head
 
 library
   exposed-modules:
+      DiceEval
       DiceParser
       Lib
   other-modules:
