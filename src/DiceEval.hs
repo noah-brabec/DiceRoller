@@ -63,17 +63,17 @@ rollDie (rolls, total) n D4 = do { value <- (getRandom 1 4);
 rollDie (rolls, total) n D6 = do { value <- (getRandom 1 6);
                                    (rollDie ((D6, value):rolls, value + total) (n-1) D6)
                                 }
-rollDie (rolls, total) n D8 = do { value <- (getRandom 1 6);
-                                   (rollDie ((D6, value):rolls, value + total) (n-1) D8)
+rollDie (rolls, total) n D8 = do { value <- (getRandom 1 8);
+                                   (rollDie ((D8, value):rolls, value + total) (n-1) D8)
                                 }
-rollDie (rolls, total) n D10 = do { value <- (getRandom 1 6);
-                                    (rollDie ((D6, value):rolls, value + total) (n-1) D10)
+rollDie (rolls, total) n D10 = do { value <- (getRandom 1 10);
+                                    (rollDie ((D10, value):rolls, value + total) (n-1) D10)
                                 }
-rollDie (rolls, total) n D12 = do { value <- (getRandom 1 6);
-                                    (rollDie ((D6, value):rolls, value + total) (n-1) D12)
+rollDie (rolls, total) n D12 = do { value <- (getRandom 1 12);
+                                    (rollDie ((D12, value):rolls, value + total) (n-1) D12)
                                 }
-rollDie (rolls, total) n D20 = do { value <- (getRandom 1 6);
-                                    (rollDie ((D6, value):rolls, value + total) (n-1) D20)
+rollDie (rolls, total) n D20 = do { value <- (getRandom 1 20);
+                                    (rollDie ((D20, value):rolls, value + total) (n-1) D20)
                                 }
 rollDie (rolls, total) n D100 = do { value <- (getRandom 1 100);
                                      (rollDie ((D100, value):rolls, value + total) (n-1) D100)
