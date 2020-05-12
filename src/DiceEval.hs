@@ -17,6 +17,7 @@ data DiceString where
     Num :: Int -> DiceString
     DiceTerm :: Int -> Int -> DiceString
     DiceRoll :: Int -> Die -> DiceString 
+    DiceTest :: DiceString -> DiceString -> DiceString
     Plus :: DiceString -> DiceString -> DiceString
     Minus :: DiceString -> DiceString -> DiceString
     Times :: DiceString -> DiceString -> DiceString
@@ -39,6 +40,7 @@ dsEval :: Result -> DiceString -> Result
 dsEval (rolls, total) (Num n) = ((Mod, n):rolls, total + n)
 dsEval result (DiceRoll n d) = (rollDie result n d)
 dsEval result (DiceTerm l r) = dsEval result (termToRoll (DiceTerm l r))
+dsEval result (DiceTest (Num l) (Num r)) = dsEval result (termToRoll (DiceTerm l r)) 
 dsEval (rolls, total) (Plus l r) = let lr = (dsEval ([], 0) l) in
                                        let rr = (dsEval ([], 0) r) in
                                            ((fst lr) ++ (fst rr) ++ rolls, (snd lr) + (snd rr) + total)

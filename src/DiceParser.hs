@@ -13,7 +13,7 @@ import Text.Parsec.Language
 languageDef = 
   javaStyle { identStart = letter
             , identLetter = alphaNum
-            , reservedNames = ["d"]
+            , reservedNames = []
             , reservedOpNames = ["+", "-", "d", "*"]
             }
 
@@ -31,7 +31,8 @@ parseString p str =
 expr :: Parser DiceString
 expr = buildExpressionParser opTable term
 
-opTable = [ [ inFix "*" Times AssocLeft ]
+opTable = [ [ inFix "d" DiceTest AssocLeft]
+          , [ inFix "*" Times AssocLeft ]
           , [ inFix "+" Plus AssocLeft ]
           , [ inFix "-" Minus AssocLeft ]
           ]
@@ -40,14 +41,7 @@ modExpr :: Parser DiceString
 modExpr = do i <- integer lexer
              return (Num (fromInteger i))
 
-dieExpr :: Parser DiceString
-dieExpr = do n <- integer lexer
-             reserved lexer "d"
-             d <- integer lexer
-             return (DiceTerm (fromInteger n) (fromInteger d))
-
 term = parens lexer expr
-       <|> dieExpr
        <|> modExpr
 
 parseDiceString = parseString expr
