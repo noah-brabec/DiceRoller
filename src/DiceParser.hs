@@ -31,7 +31,7 @@ parseString p str =
 expr :: Parser DiceString
 expr = buildExpressionParser opTable term
 
-opTable = [ [ inFix "d" DiceTest AssocLeft]
+opTable = [ [ inFix "d" DiceTerm AssocLeft]
           , [ inFix "*" Times AssocLeft ]
           , [ inFix "+" Plus AssocLeft ]
           , [ inFix "-" Minus AssocLeft ]

@@ -15,9 +15,8 @@ module DiceEval (dsEval, dsTest, DiceString (..), Die) where
 
 data DiceString where
     Num :: Int -> DiceString
-    DiceTerm :: Int -> Int -> DiceString
+    DiceTerm :: DiceString -> DiceString -> DiceString
     DiceRoll :: Int -> Die -> DiceString 
-    DiceTest :: DiceString -> DiceString -> DiceString
     Plus :: DiceString -> DiceString -> DiceString
     Minus :: DiceString -> DiceString -> DiceString
     Times :: DiceString -> DiceString -> DiceString
@@ -40,7 +39,6 @@ dsEval :: Result -> DiceString -> Result
 dsEval (rolls, total) (Num n) = ((Mod, n):rolls, total + n)
 dsEval result (DiceRoll n d) = (rollDie result n d)
 dsEval result (DiceTerm l r) = dsEval result (termToRoll (DiceTerm l r))
-dsEval result (DiceTest (Num l) (Num r)) = dsEval result (termToRoll (DiceTerm l r)) 
 dsEval (rolls, total) (Plus l r) = let lr = (dsEval ([], 0) l) in
                                        let rr = (dsEval ([], 0) r) in
                                            ((fst lr) ++ (fst rr) ++ rolls, (snd lr) + (snd rr) + total)
@@ -56,13 +54,13 @@ rollDie (rolls, total) 0 d = (rolls, total) -- We are done rolling
 rollDie (rolls, total) n d = (rollDie ((d, n):rolls, n + total) (n-1) d) --TODO actually get a random val lol
 
 termToRoll :: DiceString -> DiceString
-termToRoll (DiceTerm n 4) = DiceRoll n D4
-termToRoll (DiceTerm n 6) = DiceRoll n D6
-termToRoll (DiceTerm n 8) = DiceRoll n D8
-termToRoll (DiceTerm n 10) = DiceRoll n D10
-termToRoll (DiceTerm n 12) = DiceRoll n D12
-termToRoll (DiceTerm n 20) = DiceRoll n D20
-termToRoll (DiceTerm n 100) = DiceRoll n D100
+termToRoll (DiceTerm (Num n) (Num 4)) = DiceRoll n D4
+termToRoll (DiceTerm (Num n) (Num 6)) = DiceRoll n D6
+termToRoll (DiceTerm (Num n) (Num 8)) = DiceRoll n D8
+termToRoll (DiceTerm (Num n) (Num 10)) = DiceRoll n D10
+termToRoll (DiceTerm (Num n) (Num 12)) = DiceRoll n D12
+termToRoll (DiceTerm (Num n) (Num 20)) = DiceRoll n D20
+termToRoll (DiceTerm (Num n) (Num 100)) = DiceRoll n D100
 termToRoll (DiceTerm _ _) = DiceRoll 0 D4
 
 dsTest :: Result
