@@ -1,6 +1,6 @@
 {-# LANGUAGE GADTs #-}
 
-module DiceEval (dsEval, dsTest, DiceString (..), Die) where
+module DiceEval (dsEval, dsTest, DiceString (..), Die, Result) where
 
 
 {- After parsing, this file will be able to handle the parsed strings. Below is an example:

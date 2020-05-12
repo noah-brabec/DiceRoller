@@ -44,5 +44,5 @@ modExpr = do i <- integer lexer
 term = parens lexer expr
        <|> modExpr
 
-parseDiceString = parseString expr
+dsParse = parseString expr
 
