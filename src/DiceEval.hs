@@ -1,7 +1,10 @@
 {-# LANGUAGE GADTs #-}
 
-module DiceEval (dsEval, dsTest, DiceString (..), Die, Result) where
+module DiceEval (dsEval, DiceString (..), Die, Result) where
 
+import System.Random
+import System.IO.Unsafe
+import Control.Monad.IO.Class
 
 {- After parsing, this file will be able to handle the parsed strings. Below is an example:
     
@@ -35,23 +38,49 @@ data Die where
 
 type Result = ([(Die, Int)], Int)
 
-dsEval :: Result -> DiceString -> Result
-dsEval (rolls, total) (Num n) = ((Mod, n):rolls, total + n)
+dsEval :: Result -> DiceString -> IO Result
+dsEval (rolls, total) (Num n) = return ((Mod, n):rolls, total + n)
 dsEval result (DiceRoll n d) = (rollDie result n d)
-dsEval result (DiceTerm l r) = dsEval result (termToRoll (DiceTerm l r))
-dsEval (rolls, total) (Plus l r) = let lr = (dsEval ([], 0) l) in
-                                       let rr = (dsEval ([], 0) r) in
-                                           ((fst lr) ++ (fst rr) ++ rolls, (snd lr) + (snd rr) + total)
-dsEval (rolls, total) (Minus l r) = let lr  = (dsEval ([], 0) l) in
-                                        let rr  = (dsEval ([], 0) r) in
-                                            ((fst lr) ++ (fst rr) ++ rolls, total + ((snd lr) - (snd rr)))
-dsEval (rolls, total) (Times l r) = let lr = (dsEval ([], 0) l) in
-                                        let rr = (dsEval ([], 0) r) in
-                                            ((fst lr) ++ (fst rr) ++ rolls, total + ((snd lr) * (snd rr)))
+dsEval result (DiceTerm l r) = (dsEval result (termToRoll (DiceTerm l r)))
+dsEval (rolls, total) (Plus l r) = do{ lr <- (dsEval ([], 0) l);
+                                       rr <- (dsEval ([], 0) r);
+                                       return ((fst lr) ++ (fst rr) ++ rolls, (snd lr) + (snd rr) + total)
+                                       }
+dsEval (rolls, total) (Minus l r) = do { lr <- (dsEval ([], 0) l);
+                                         rr <- (dsEval ([], 0) r);
+                                         return ((fst lr) ++ (fst rr) ++ rolls, total + ((snd lr) - (snd rr)))
+                                        }
+dsEval (rolls, total) (Times l r) = do { lr <- (dsEval ([], 0) l);
+                                         rr <- (dsEval ([], 0) r);
+                                         return ((fst lr) ++ (fst rr) ++ rolls, total + ((snd lr) * (snd rr)))
+                                        }
 
-rollDie :: Result -> Int -> Die -> Result
-rollDie (rolls, total) 0 d = (rolls, total) -- We are done rolling 
-rollDie (rolls, total) n d = (rollDie ((d, n):rolls, n + total) (n-1) d) --TODO actually get a random val lol
+rollDie :: Result -> Int -> Die -> IO Result
+rollDie (rolls, total) 0 d = return (rolls, total) -- We are done rolling 
+rollDie (rolls, total) n D4 = do { value <- (getRandom 1 4);
+                                   (rollDie ((D4, value):rolls, value + total) (n-1) D4);
+                                }
+rollDie (rolls, total) n D6 = do { value <- (getRandom 1 6);
+                                   (rollDie ((D6, value):rolls, value + total) (n-1) D6)
+                                }
+rollDie (rolls, total) n D8 = do { value <- (getRandom 1 6);
+                                   (rollDie ((D6, value):rolls, value + total) (n-1) D8)
+                                }
+rollDie (rolls, total) n D10 = do { value <- (getRandom 1 6);
+                                    (rollDie ((D6, value):rolls, value + total) (n-1) D10)
+                                }
+rollDie (rolls, total) n D12 = do { value <- (getRandom 1 6);
+                                    (rollDie ((D6, value):rolls, value + total) (n-1) D12)
+                                }
+rollDie (rolls, total) n D20 = do { value <- (getRandom 1 6);
+                                    (rollDie ((D6, value):rolls, value + total) (n-1) D20)
+                                }
+rollDie (rolls, total) n D100 = do { value <- (getRandom 1 100);
+                                     (rollDie ((D100, value):rolls, value + total) (n-1) D100)
+                                }
+
+getRandom :: Int -> Int -> IO Int
+getRandom l u = randomRIO (l, u)
 
 termToRoll :: DiceString -> DiceString
 termToRoll (DiceTerm (Num n) (Num 4)) = DiceRoll n D4
@@ -62,6 +91,3 @@ termToRoll (DiceTerm (Num n) (Num 12)) = DiceRoll n D12
 termToRoll (DiceTerm (Num n) (Num 20)) = DiceRoll n D20
 termToRoll (DiceTerm (Num n) (Num 100)) = DiceRoll n D100
 termToRoll (DiceTerm _ _) = DiceRoll 0 D4
-
-dsTest :: Result
-dsTest = (dsEval ([], 0) (Plus (DiceRoll 3 D4) (Num 6)))

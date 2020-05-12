@@ -7,14 +7,16 @@ import DiceParser (dsParse)
 import DiceEval (dsEval, Result)
 import Data.Text.Lazy as LazyT
 import Data.Monoid (mconcat) 
+import Control.Monad.IO.Class
 
 getRoll :: IO ()
 getRoll = scotty 3000 $
-  get "/:word" $ do
+  get "/:word" $ do {
     beam <- param "word";
-    let output = parseRoll beam in
-      json (mconcat ["total: ", show (snd output), ", rolls: ", show(fst output)])
+    output <- liftIO (parseRoll beam);
+    json (mconcat ["total: ", show (snd output), ", rolls: ", show(fst output)])
+  }
 
 
-parseRoll :: Text -> Result
+parseRoll :: Text -> IO Result
 parseRoll n = (dsEval ([], 0) (dsParse (Prelude.tail (show n))))
