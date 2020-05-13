@@ -9,6 +9,7 @@ import Data.Text.Lazy as LazyT
 import Data.Monoid (mconcat) 
 import Control.Monad.IO.Class
 
+--Endpoint that controls what port scotty listens on. You can change the port number if you want
 getRoll :: IO ()
 getRoll = scotty 3000 $
   get "/:word" $ do {

@@ -16,6 +16,7 @@ import Control.Monad.IO.Class
     ([(D4,1), (D4, 3), (D4, 2), (Mod, 6)], 12) 
 -}
 
+-- Structure for our AST language
 data DiceString where
     Num :: Int -> DiceString
     DiceTerm :: DiceString -> DiceString -> DiceString
@@ -25,6 +26,7 @@ data DiceString where
     Times :: DiceString -> DiceString -> DiceString
     deriving(Show, Eq)
 
+-- Quality of life identifiers
 data Die where
     Mod :: Die
     D4 :: Die
@@ -38,6 +40,7 @@ data Die where
 
 type Result = ([(Die, Int)], Int)
 
+--Evaluates the internal AST language
 dsEval :: Result -> DiceString -> IO Result
 dsEval (rolls, total) (Num n) = return ((Mod, n):rolls, total + n)
 dsEval result (DiceRoll n d) = (rollDie result n d)
@@ -55,6 +58,7 @@ dsEval (rolls, total) (Times l r) = do { lr <- (dsEval ([], 0) l);
                                          return ((fst lr) ++ (fst rr) ++ rolls, total + ((snd lr) * (snd rr)))
                                         }
 
+--Rolls the dice and builds the result
 rollDie :: Result -> Int -> Die -> IO Result
 rollDie (rolls, total) 0 d = return (rolls, total) -- We are done rolling 
 rollDie (rolls, total) n D4 = do { value <- (getRandom 1 4);
@@ -79,9 +83,11 @@ rollDie (rolls, total) n D100 = do { value <- (getRandom 1 100);
                                      (rollDie ((D100, value):rolls, value + total) (n-1) D100)
                                 }
 
+--Gets us a random int in range
 getRandom :: Int -> Int -> IO Int
 getRandom l u = randomRIO (l, u)
 
+-- Lets us use the die type, defaults to a 'no roll' if a bad dice is given
 termToRoll :: DiceString -> DiceString
 termToRoll (DiceTerm (Num n) (Num 4)) = DiceRoll n D4
 termToRoll (DiceTerm (Num n) (Num 6)) = DiceRoll n D6
